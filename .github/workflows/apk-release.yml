@@ -1,0 +1,376 @@
+name: APK Release Automation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apk-release-automation
+  cancel-in-progress: false
+
+jobs:
+  download-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade gplaydl
+          gh --version
+          git --version
+
+      - name: Prepare gplaydl JSON configuration
+        env:
+          GPLAYDL_API_KEY: ${{ secrets.GPLAYDL_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          raw = os.environ.get("GPLAYDL_API_KEY", "").strip()
+          if not raw:
+              raise SystemExit("GPLAYDL_API_KEY is empty.")
+
+          try:
+              config = json.loads(raw)
+          except json.JSONDecodeError as exc:
+              raise SystemExit(
+                  "GPLAYDL_API_KEY must contain valid JSON."
+              ) from exc
+
+          if not isinstance(config, dict):
+              raise SystemExit("The JSON root must be an object.")
+
+          if not isinstance(config.get("dispenser"), str) or not config["dispenser"].strip():
+              raise SystemExit("JSON must contain a non-empty dispenser.")
+
+          if not isinstance(config.get("api_key"), str) or not config["api_key"].strip():
+              raise SystemExit("JSON must contain a non-empty api_key.")
+
+          config_dir = Path.home() / ".config" / "gplaydl"
+          config_dir.mkdir(parents=True, exist_ok=True)
+
+          config_file = config_dir / "config.json"
+          config_file.write_text(
+              json.dumps(config, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          config_file.chmod(0o600)
+
+          print("gplaydl JSON configuration prepared.")
+          PY
+
+      - name: Download APKs and publish to matching repositories
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+          PACKAGE_01: ${{ secrets.PACKAGE_01 }}
+          PACKAGE_02: ${{ secrets.PACKAGE_02 }}
+          PACKAGE_03: ${{ secrets.PACKAGE_03 }}
+          PACKAGE_04: ${{ secrets.PACKAGE_04 }}
+          PACKAGE_05: ${{ secrets.PACKAGE_05 }}
+          PACKAGE_06: ${{ secrets.PACKAGE_06 }}
+          PACKAGE_07: ${{ secrets.PACKAGE_07 }}
+          PACKAGE_08: ${{ secrets.PACKAGE_08 }}
+          PACKAGE_09: ${{ secrets.PACKAGE_09 }}
+          PACKAGE_10: ${{ secrets.PACKAGE_10 }}
+          PACKAGE_11: ${{ secrets.PACKAGE_11 }}
+          PACKAGE_12: ${{ secrets.PACKAGE_12 }}
+          PACKAGE_13: ${{ secrets.PACKAGE_13 }}
+          PACKAGE_14: ${{ secrets.PACKAGE_14 }}
+          PACKAGE_15: ${{ secrets.PACKAGE_15 }}
+          PACKAGE_16: ${{ secrets.PACKAGE_16 }}
+          PACKAGE_17: ${{ secrets.PACKAGE_17 }}
+          PACKAGE_18: ${{ secrets.PACKAGE_18 }}
+          PACKAGE_19: ${{ secrets.PACKAGE_19 }}
+          PACKAGE_20: ${{ secrets.PACKAGE_20 }}
+          PACKAGE_21: ${{ secrets.PACKAGE_21 }}
+          PACKAGE_22: ${{ secrets.PACKAGE_22 }}
+          PACKAGE_23: ${{ secrets.PACKAGE_23 }}
+          PACKAGE_24: ${{ secrets.PACKAGE_24 }}
+          PACKAGE_25: ${{ secrets.PACKAGE_25 }}
+          PACKAGE_26: ${{ secrets.PACKAGE_26 }}
+          PACKAGE_27: ${{ secrets.PACKAGE_27 }}
+          PACKAGE_28: ${{ secrets.PACKAGE_28 }}
+          PACKAGE_29: ${{ secrets.PACKAGE_29 }}
+          PACKAGE_30: ${{ secrets.PACKAGE_30 }}
+          PACKAGE_31: ${{ secrets.PACKAGE_31 }}
+          PACKAGE_32: ${{ secrets.PACKAGE_32 }}
+          PACKAGE_33: ${{ secrets.PACKAGE_33 }}
+          PACKAGE_34: ${{ secrets.PACKAGE_34 }}
+          PACKAGE_35: ${{ secrets.PACKAGE_35 }}
+          PACKAGE_36: ${{ secrets.PACKAGE_36 }}
+          PACKAGE_37: ${{ secrets.PACKAGE_37 }}
+          PACKAGE_38: ${{ secrets.PACKAGE_38 }}
+          PACKAGE_39: ${{ secrets.PACKAGE_39 }}
+          PACKAGE_40: ${{ secrets.PACKAGE_40 }}
+          PACKAGE_41: ${{ secrets.PACKAGE_41 }}
+          PACKAGE_42: ${{ secrets.PACKAGE_42 }}
+          PACKAGE_43: ${{ secrets.PACKAGE_43 }}
+          PACKAGE_44: ${{ secrets.PACKAGE_44 }}
+          PACKAGE_45: ${{ secrets.PACKAGE_45 }}
+          PACKAGE_46: ${{ secrets.PACKAGE_46 }}
+          PACKAGE_47: ${{ secrets.PACKAGE_47 }}
+          PACKAGE_48: ${{ secrets.PACKAGE_48 }}
+          PACKAGE_49: ${{ secrets.PACKAGE_49 }}
+          PACKAGE_50: ${{ secrets.PACKAGE_50 }}
+
+          RELEASE_REPOSITORY_01: ${{ secrets.RELEASE_REPOSITORY_01 }}
+          RELEASE_REPOSITORY_02: ${{ secrets.RELEASE_REPOSITORY_02 }}
+          RELEASE_REPOSITORY_03: ${{ secrets.RELEASE_REPOSITORY_03 }}
+          RELEASE_REPOSITORY_04: ${{ secrets.RELEASE_REPOSITORY_04 }}
+          RELEASE_REPOSITORY_05: ${{ secrets.RELEASE_REPOSITORY_05 }}
+          RELEASE_REPOSITORY_06: ${{ secrets.RELEASE_REPOSITORY_06 }}
+          RELEASE_REPOSITORY_07: ${{ secrets.RELEASE_REPOSITORY_07 }}
+          RELEASE_REPOSITORY_08: ${{ secrets.RELEASE_REPOSITORY_08 }}
+          RELEASE_REPOSITORY_09: ${{ secrets.RELEASE_REPOSITORY_09 }}
+          RELEASE_REPOSITORY_10: ${{ secrets.RELEASE_REPOSITORY_10 }}
+          RELEASE_REPOSITORY_11: ${{ secrets.RELEASE_REPOSITORY_11 }}
+          RELEASE_REPOSITORY_12: ${{ secrets.RELEASE_REPOSITORY_12 }}
+          RELEASE_REPOSITORY_13: ${{ secrets.RELEASE_REPOSITORY_13 }}
+          RELEASE_REPOSITORY_14: ${{ secrets.RELEASE_REPOSITORY_14 }}
+          RELEASE_REPOSITORY_15: ${{ secrets.RELEASE_REPOSITORY_15 }}
+          RELEASE_REPOSITORY_16: ${{ secrets.RELEASE_REPOSITORY_16 }}
+          RELEASE_REPOSITORY_17: ${{ secrets.RELEASE_REPOSITORY_17 }}
+          RELEASE_REPOSITORY_18: ${{ secrets.RELEASE_REPOSITORY_18 }}
+          RELEASE_REPOSITORY_19: ${{ secrets.RELEASE_REPOSITORY_19 }}
+          RELEASE_REPOSITORY_20: ${{ secrets.RELEASE_REPOSITORY_20 }}
+          RELEASE_REPOSITORY_21: ${{ secrets.RELEASE_REPOSITORY_21 }}
+          RELEASE_REPOSITORY_22: ${{ secrets.RELEASE_REPOSITORY_22 }}
+          RELEASE_REPOSITORY_23: ${{ secrets.RELEASE_REPOSITORY_23 }}
+          RELEASE_REPOSITORY_24: ${{ secrets.RELEASE_REPOSITORY_24 }}
+          RELEASE_REPOSITORY_25: ${{ secrets.RELEASE_REPOSITORY_25 }}
+          RELEASE_REPOSITORY_26: ${{ secrets.RELEASE_REPOSITORY_26 }}
+          RELEASE_REPOSITORY_27: ${{ secrets.RELEASE_REPOSITORY_27 }}
+          RELEASE_REPOSITORY_28: ${{ secrets.RELEASE_REPOSITORY_28 }}
+          RELEASE_REPOSITORY_29: ${{ secrets.RELEASE_REPOSITORY_29 }}
+          RELEASE_REPOSITORY_30: ${{ secrets.RELEASE_REPOSITORY_30 }}
+          RELEASE_REPOSITORY_31: ${{ secrets.RELEASE_REPOSITORY_31 }}
+          RELEASE_REPOSITORY_32: ${{ secrets.RELEASE_REPOSITORY_32 }}
+          RELEASE_REPOSITORY_33: ${{ secrets.RELEASE_REPOSITORY_33 }}
+          RELEASE_REPOSITORY_34: ${{ secrets.RELEASE_REPOSITORY_34 }}
+          RELEASE_REPOSITORY_35: ${{ secrets.RELEASE_REPOSITORY_35 }}
+          RELEASE_REPOSITORY_36: ${{ secrets.RELEASE_REPOSITORY_36 }}
+          RELEASE_REPOSITORY_37: ${{ secrets.RELEASE_REPOSITORY_37 }}
+          RELEASE_REPOSITORY_38: ${{ secrets.RELEASE_REPOSITORY_38 }}
+          RELEASE_REPOSITORY_39: ${{ secrets.RELEASE_REPOSITORY_39 }}
+          RELEASE_REPOSITORY_40: ${{ secrets.RELEASE_REPOSITORY_40 }}
+          RELEASE_REPOSITORY_41: ${{ secrets.RELEASE_REPOSITORY_41 }}
+          RELEASE_REPOSITORY_42: ${{ secrets.RELEASE_REPOSITORY_42 }}
+          RELEASE_REPOSITORY_43: ${{ secrets.RELEASE_REPOSITORY_43 }}
+          RELEASE_REPOSITORY_44: ${{ secrets.RELEASE_REPOSITORY_44 }}
+          RELEASE_REPOSITORY_45: ${{ secrets.RELEASE_REPOSITORY_45 }}
+          RELEASE_REPOSITORY_46: ${{ secrets.RELEASE_REPOSITORY_46 }}
+          RELEASE_REPOSITORY_47: ${{ secrets.RELEASE_REPOSITORY_47 }}
+          RELEASE_REPOSITORY_48: ${{ secrets.RELEASE_REPOSITORY_48 }}
+          RELEASE_REPOSITORY_49: ${{ secrets.RELEASE_REPOSITORY_49 }}
+          RELEASE_REPOSITORY_50: ${{ secrets.RELEASE_REPOSITORY_50 }}
+
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          if [[ -z "${RELEASE_TOKEN:-}" ]]; then
+            echo "::error::RELEASE_TOKEN is empty."
+            exit 1
+          fi
+
+          export GH_TOKEN="$RELEASE_TOKEN"
+          export GH_PROMPT_DISABLED=1
+
+          FAILED=0
+          PROCESSED=0
+
+          ensure_repository() {
+            local target_repo="$1"
+            local repo_name init_dir
+
+            if gh repo view "$target_repo" >/dev/null 2>&1; then
+              echo "Repository exists: $target_repo"
+              return 0
+            fi
+
+            repo_name="${target_repo#*/}"
+            init_dir="$(mktemp -d)"
+
+            printf '# %s\n' "$repo_name" > "$init_dir/README.md"
+
+            git -C "$init_dir" init -b main
+            git -C "$init_dir" config user.name "github-actions[bot]"
+            git -C "$init_dir" config user.email \
+              "41898282+github-actions[bot]@users.noreply.github.com"
+            git -C "$init_dir" add README.md
+            git -C "$init_dir" commit -m "Initialize repository with README"
+
+            if ! gh repo create "$target_repo" \
+              --public \
+              --source "$init_dir" \
+              --remote origin \
+              --push; then
+              rm -rf "$init_dir"
+              echo "::error::Could not create $target_repo."
+              return 1
+            fi
+
+            rm -rf "$init_dir"
+            echo "Created public repository with README: $target_repo"
+          }
+
+          process_package() {
+            local number="$1"
+            local package="$2"
+            local target_repo="$3"
+            local outdir version_code tag asset_names asset
+            local -a files
+
+            if [[ -z "$package" && -z "$target_repo" ]]; then
+              echo "[$number] Skipped: pair is empty."
+              return 0
+            fi
+
+            if [[ -z "$package" || -z "$target_repo" ]]; then
+              echo "::error::[$number] Package and repository must both be set."
+              return 1
+            fi
+
+            if [[ ! "$package" =~ ^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+$ ]]; then
+              echo "::error::[$number] Invalid package ID."
+              return 1
+            fi
+
+            if [[ ! "$target_repo" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]]; then
+              echo "::error::[$number] Invalid repository format. Use OWNER/REPO."
+              return 1
+            fi
+
+            echo "[$number] Processing $package -> $target_repo"
+
+            if ! ensure_repository "$target_repo"; then
+              return 1
+            fi
+
+            outdir="apks/$number/$package"
+            mkdir -p "$outdir"
+
+            if ! gplaydl download "$package" -o "$outdir"; then
+              echo "::error::[$number] Download failed for $package."
+              return 1
+            fi
+
+            version_code="$(
+              python - "$package" "$outdir" <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          package = sys.argv[1]
+          directory = Path(sys.argv[2])
+          pattern = re.compile(re.escape(package) + r"-(\d+)\.apk")
+
+          versions = []
+          for path in directory.glob("*.apk"):
+              match = pattern.fullmatch(path.name)
+              if match:
+                  versions.append(int(match.group(1)))
+
+          if not versions:
+              raise SystemExit("Base APK version code not found.")
+
+          print(max(versions))
+          PY
+            ) || {
+              echo "::error::[$number] Could not determine version code."
+              return 1
+            }
+
+            shopt -s nullglob
+            files=("$outdir"/*.apk)
+
+            if [[ ${#files[@]} -eq 0 ]]; then
+              echo "::error::[$number] No APK files were downloaded."
+              return 1
+            fi
+
+            tag="apk-${package}-v${version_code}"
+
+            if ! gh release view "$tag" --repo "$target_repo" >/dev/null 2>&1; then
+              if ! gh release create "$tag" \
+                --repo "$target_repo" \
+                --title "$package v$version_code" \
+                --notes "Package: $package
+          Version code: $version_code"; then
+                echo "::error::[$number] Could not create release."
+                return 1
+              fi
+            fi
+
+            asset_names="$(
+              gh release view "$tag" \
+                --repo "$target_repo" \
+                --json assets \
+                --jq '.assets[].name'
+            )" || return 1
+
+            while IFS= read -r asset; do
+              [[ -z "$asset" ]] && continue
+
+              if [[ "$asset" == "$package-"*.apk ]]; then
+                if ! gh release delete-asset "$tag" "$asset" \
+                  --repo "$target_repo" --yes; then
+                  echo "::error::[$number] Could not replace asset $asset."
+                  return 1
+                fi
+              fi
+            done <<< "$asset_names"
+
+            if ! gh release upload "$tag" "${files[@]}" --repo "$target_repo"; then
+              echo "::error::[$number] Upload failed."
+              return 1
+            fi
+
+            echo "[$number] Published $package v$version_code successfully."
+          }
+
+          for i in $(seq -w 1 50); do
+            package_var="PACKAGE_$i"
+            repo_var="RELEASE_REPOSITORY_$i"
+
+            package="${!package_var:-}"
+            target_repo="${!repo_var:-}"
+
+            if [[ -z "$package" && -z "$target_repo" ]]; then
+              continue
+            fi
+
+            PROCESSED=$((PROCESSED + 1))
+
+            if ! process_package "$i" "$package" "$target_repo"; then
+              FAILED=1
+              echo "::warning::[$i] Failed; continuing with the next pair."
+            fi
+          done
+
+          if [[ "$PROCESSED" -eq 0 ]]; then
+            echo "::error::No package/repository pairs are configured."
+            exit 1
+          fi
+
+          if [[ "$FAILED" -ne 0 ]]; then
+            echo "::error::One or more pairs failed. Check the logs above."
+            exit 1
+          fi
+
+          echo "All configured package/repository pairs processed successfully."
