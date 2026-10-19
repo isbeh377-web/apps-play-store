@@ -271,7 +271,7 @@ jobs:
             fi
 
             version_code="$(
-              python -c 'import re, sys; from pathlib import Path; package=sys.argv[1]; directory=Path(sys.argv[2]); pattern=re.compile(re.escape(package) + r"-(\\d+)\\.apk"); versions=[int(match.group(1)) for path in directory.glob("*.apk") if (match := pattern.fullmatch(path.name))]; print(max(versions) if versions else (_ for _ in ()).throw(SystemExit("Base APK version code not found.")))' "$package" "$outdir"
+              python -c 'import re, sys; from pathlib import Path; package=sys.argv[1]; directory=Path(sys.argv[2]); pattern=re.compile(re.escape(package) + r"-(\d+)\.apk"); versions=[int(match.group(1)) for path in directory.glob("*.apk") if (match := pattern.fullmatch(path.name))]; print(max(versions) if versions else (_ for _ in ()).throw(SystemExit("Base APK version code not found.")))' "$package" "$outdir"
             )" || {
               echo "::error::[$number] Could not determine version code."
               return 1
