@@ -1,1 +1,1 @@
-# apk-release-bot
+# apps-play-store
