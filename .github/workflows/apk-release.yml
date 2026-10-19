@@ -310,8 +310,7 @@ jobs:
               if ! gh release create "$tag" \
                 --repo "$target_repo" \
                 --title "$package v$version_code" \
-                --notes "Package: $package
-          Version code: $version_code"; then
+                --notes "Package: ${package}; Version code: ${version_code}"; then
                 echo "::error::[$number] Could not create release."
                 return 1
               fi
